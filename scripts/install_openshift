@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# Notes:
+# * Ensure host can resolve wildcard domain !!!
+# * 'local' is a reserved domain name in openshift
+# * Remove search domain from host resolv.conf
+# * Ensure you have an empty drive available on /dev/sdb for docker storage.
+# * After install ensure not has the following search domains in /etc/resolv.conf
+# * /etc/dnsmasq.d/origin-upstream-dns.conf - check that upstream DNS server has been set correctly.
+#   search cluster.local cluster.local default.svc.cluster.local svc.cluster.local default.svc
+# * 172.30.227.40 docker-registry.default.svc add to hosts file.
+
+echo "Generating SSH Key & keying system"
+ssh-keygen
+ssh-copy-id root@master.loc
+
+echo "Installing OpenShift Container Platform"
+yum install -y centos-release-openshift-origin311.noarch
+yum install -y openshift-ansible.noarch
+
+# Newer version of ansible breaks OpenShift 3.11 playbook
+# echo "Downgrading Ansible to v2.6.0"
+# yum install -y python2-pip-8.1.2-12.el7.noarch
+# pip install ansible==2.6.0
+
+
+cd /usr/share/ansible/openshift-ansible/
+
+# Patch Ansible service broker role due to bug
+# https://github.com/openshift/openshift-ansible/issues/11213
+echo "Patching Ansible Service Broker image version bug"
+patch -p1 < ~/openshift-config/patch/asb.patch
+
+# Patch DNS search domains issue
+echo "Patching DNS search domain bug"
+patch -p1 < ~/okd3.11/patch/dns.patch
+
+# Bug: python2-docker conflicting with python-docker-py
+# https://github.com/openshift/origin/issues/20653
+# https://github.com/openshift/openshift-ansible/issues/8399#issuecomment-413582800
+yum remove -y  python2-docker
+yum install -y python-docker-py
+
+# Prepare
+ansible-playbook -i ~/okd3.11/inventory ./playbooks/prerequisites.yml
+
+# Installing Openshift
+ansible-playbook -i ~/okd3.11/inventory ./playbooks/deploy_cluster.yml
+
+echo ""
+echo "Setting up Users"
+oc adm policy add-cluster-role-to-user cluster-admin admin
+
+echo ""
+echo "--- Installation Completed ---"
+echo ""

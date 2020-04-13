@@ -1,0 +1,12 @@
+--- a/roles/openshift_node/files/networkmanager/99-origin-dns.sh	2018-11-02 04:32:05.000000000 +0200
++++ b/roles/openshift_node/files/networkmanager/99-origin-dns.sh	2019-05-17 13:17:34.945776738 +0200
+@@ -117,7 +117,7 @@
+         echo 'search cluster.local' >> ${NEW_RESOLV_CONF}
+       elif ! grep -q 'search cluster.local' ${NEW_RESOLV_CONF}; then
+         # cluster.local should be in first three DNS names so that glibc resolver would work
+-        sed -i -e 's/^search[[:blank:]]\(.\+\)\( cluster\.local\)\{0,1\}$/search cluster.local \1/' ${NEW_RESOLV_CONF}
++        sed -i -e 's/^search[[:blank:]]\(.\+\)\( cluster\.local\)\{0,1\}$/search cluster.local/' ${NEW_RESOLV_CONF}
+       fi
+       cp -Z ${NEW_RESOLV_CONF} /etc/resolv.conf
+     fi
+

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# New nodes needs python-yaml and python-ipaddress pre-installed
+# yum install -y python-yaml python-ipaddress
+
+# Add new node details to inventory like below
+#[new_nodes]
+#node1.loc openshift_node_group_name='node-config-infra'
+
+#[new_nodes:vars]
+#openshift_release=v3.11
+#openshift_image_tag=v3.11.0
+#openshift_pkg_version=-3.11.0
+#openshift_deployment_type=origin
+
+cd /usr/share/ansible/openshift-ansible/
+ansible-playbook -i ~/okd3.11/inventory ./playbooks/openshift-node/scaleup.yml
+
+
