@@ -114,11 +114,11 @@ template_service_broker_install=true
 openshift_cockpit_deployer_image='docker.io/timbordemann/cockpit-kubernetes:latest'
 
 # Adding additional nodes
-[new_nodes]
-node1.loc openshift_node_group_name='node-config-infra'
+#[new_nodes]
+#node1.loc openshift_node_group_name='node-config-infra'
 
-[new_nodes:vars]
-openshift_release=v3.11
-openshift_image_tag=v3.11.0
-openshift_pkg_version=-3.11.0
-openshift_deployment_type=origin
+#[new_nodes:vars]
+#openshift_release=v3.11
+#openshift_image_tag=v3.11.0
+#openshift_pkg_version=-3.11.0
+#openshift_deployment_type=origin
