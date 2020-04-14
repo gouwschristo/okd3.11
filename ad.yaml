@@ -1,0 +1,28 @@
+  identityProviders:
+  - name: Active Directory
+    login: true
+    provider:
+      apiVersion: v1
+      attributes:
+        id:
+        - dn
+        name:
+        - displayName
+        preferredUsername:
+        - sAMAccountName
+      bindDN: CN=administrator,CN=Users,DC=ad,DC=loc
+      bindPassword: "password"
+      insecure: true
+      kind: LDAPPasswordIdentityProvider
+      url: ldap://192.168.1.120/DC=AD,DC=loc?sAMAccountName
+  - name: htpasswd_auth
+    challenge: true
+    login: true
+    mappingMethod: claim
+    provider:
+      apiVersion: v1
+      file: /etc/origin/master/htpasswd
+      kind: HTPasswdPasswordIdentityProvider
+  masterCA: ca-bundle.crt
+  masterPublicURL: https://master.loc:8443
+  masterURL: https://master.loc:8443
